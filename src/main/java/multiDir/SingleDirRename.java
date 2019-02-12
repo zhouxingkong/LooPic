@@ -1,4 +1,4 @@
-package singleDir;
+package multiDir;
 
 import java.io.File;
 import java.util.List;
@@ -14,7 +14,7 @@ public class SingleDirRename {
     int[] indexs;
 
 
-    public String getNameRoot(int l) {
+    public static String getNameRoot(int l) {
         String str = "";
         for (int i = 0; i < l; i++) {
             str = str + (char) (Math.random() * 26 + 'a');

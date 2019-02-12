@@ -1,4 +1,4 @@
-import singleDir.SingleDirRename;
+import multiDir.SingleDirRename;
 
 import java.util.Scanner;
 
