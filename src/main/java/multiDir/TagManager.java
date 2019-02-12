@@ -1,6 +1,7 @@
 package multiDir;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /*图片标签管理*/
@@ -17,8 +18,24 @@ public class TagManager {
         dir = base/*+lists[file_index]+"/"*/ + "/";
         File file = new File(dir);
         files = file.list();
-        file_num = files.length;
-        imglist = java.util.Arrays.asList(files);
+        imglist = new ArrayList();
+        file_num = 0;
+        File[] files = file.listFiles(); // 该文件目录下文件全部放入数组
+        if (files != null) {
+            for (int i = 0; i < files.length; i++) {
+//                String fileName = files[i].getName();
+                if (files[i].isDirectory()) { // 判断是文件还是文件夹
+
+                } else {
+//                    String strFileName = files[i].getAbsolutePath();
+//                    System.out.println("---" + strFileName);
+                    file_num++;
+                    imglist.add(files[i].getName());
+                }
+            }
+
+        }
+//        imglist = java.util.Arrays.asList(files);
     }
 
     public String addTagToName(String name, String tag) {

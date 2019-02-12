@@ -1,43 +1,17 @@
-package multiDir;
+package tagImg;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**/
-public class SubDirImages {
-
-    public int img_index = 0;
+public class ImageCpy {
     public int file_num = 0;
     int[] indexs;
-    String dir;
-    String[] files;
-    List imglist;
-
-
-    public static List<File> getFileList(List<File> filelist, String strPath) {
-
-        File dir = new File(strPath);
-        File[] files = dir.listFiles(); // 该文件目录下文件全部放入数组
-        if (files != null) {
-            for (int i = 0; i < files.length; i++) {
-//                String fileName = files[i].getName();
-                if (files[i].isDirectory()) { // 判断是文件还是文件夹
-                    getFileList(filelist, files[i].getAbsolutePath()); // 获取文件绝对路径
-                } else {
-//                    String strFileName = files[i].getAbsolutePath();
-//                    System.out.println("---" + strFileName);
-                    filelist.add(files[i]);
-                }
-            }
-
-        }
-        return filelist;
-    }
+    int currIndex = 0;
+    String letters = getNameRoot(8);
 
     //后缀
     public static String getSuffix(String filename) {
@@ -47,6 +21,14 @@ public class SubDirImages {
         } else {
             return filename.substring(dix + 1);
         }
+    }
+
+    public static String getNameRoot(int l) {
+        String str = "";
+        for (int i = 0; i < l; i++) {
+            str = str + (char) (Math.random() * 26 + 'a');
+        }
+        return str;
     }
 
     public void genLinearList() {
@@ -75,7 +57,7 @@ public class SubDirImages {
      * @return boolean
      */
     public void copyFile(String oldPath, String newPath) {
-        System.out.println(oldPath + "-->" + newPath);
+//        System.out.println(oldPath + "-->" + newPath);
         try {
             int bytesum = 0;
             int byteread = 0;
@@ -87,7 +69,6 @@ public class SubDirImages {
                 int length;
                 while ((byteread = inStream.read(buffer)) != -1) {
                     bytesum += byteread; //字节数 文件大小
-                    System.out.println(bytesum);
                     fs.write(buffer, 0, byteread);
                 }
                 inStream.close();
@@ -100,24 +81,25 @@ public class SubDirImages {
 
     }
 
-    public void copyRandImage(String fromDir, String toDir, int num) {
-        List<File> filelist = SubDirImages.getFileList(new ArrayList<File>(), fromDir);
+    public void copyRandImage(List<TagedFile> filelist, String toDir, int num) {
+//        List<File> filelist = SubDirImages.getFileList(new ArrayList<File>(), fromDir);
         file_num = filelist.size();
         if (num > file_num) num = file_num;
         genRandomList();
-        File f;
+        TagedFile f;
         String fromPath = "";
         String toPath = "";
 
-        String letters = SingleDirRename.getNameRoot(8);
+
         String numbers = "";
         String suf = "";
-        System.out.println(num);
+//        System.out.println(num);
         for (int i = 0; i < num; i++) {
             f = filelist.get(indexs[i]);
             fromPath = f.getAbsolutePath();
 
-            numbers = "" + i;
+            numbers = "" + currIndex;
+            currIndex++;
             while (numbers.length() < 6) {
                 numbers = "0" + numbers;
             }
