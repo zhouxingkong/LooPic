@@ -5,11 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Random;
 
 public class ImageCpy {
-    public int file_num = 0;
-    int[] indexs;
+    //    public int file_num = 0;
+//    int[] indexs;
     int currIndex = 0;
     String letters = getNameRoot(8);
 
@@ -31,23 +30,6 @@ public class ImageCpy {
         return str;
     }
 
-    public void genLinearList() {
-        indexs = new int[file_num];
-        for (int j = 0; j < file_num; j++) {
-            indexs[j] = j;    //给索引数组赋值
-        }
-    }
-
-    public void genRandomList() {
-        genLinearList();
-        Random random = new Random();
-        for (int j = 0; j < file_num; j++) {
-            int temp = indexs[j];
-            int newindx = random.nextInt(file_num - 1);
-            indexs[j] = indexs[newindx];  //交换位置
-            indexs[newindx] = temp;
-        }
-    }
 
     /**
      * 复制单个文件
@@ -81,21 +63,23 @@ public class ImageCpy {
 
     }
 
-    public void copyRandImage(List<TagedFile> filelist, String toDir, int num) {
-//        List<File> filelist = SubDirImages.getFileList(new ArrayList<File>(), fromDir);
-        file_num = filelist.size();
-        if (num > file_num) num = file_num;
-        genRandomList();
+    public void copyRandImage(FilterResult fr, String toDir, int num) {
+        List<TagedFile> filelist = fr.getFilteredList();
+        int[] indexs = fr.getRandomIndexs();
+        int numLimit = fr.getRes();
+        int offset = fr.getConsumeIndex();
+
+        if (num > numLimit) num = numLimit;
         TagedFile f;
         String fromPath = "";
         String toPath = "";
-
+//        System.out.println("num="+num);
 
         String numbers = "";
         String suf = "";
 //        System.out.println(num);
         for (int i = 0; i < num; i++) {
-            f = filelist.get(indexs[i]);
+            f = filelist.get(indexs[i + offset]);
             fromPath = f.getAbsolutePath();
 
             numbers = "" + currIndex;
@@ -108,6 +92,7 @@ public class ImageCpy {
             toPath = toDir + "/" + letters + numbers + "." + suf;
             copyFile(fromPath, toPath);
         }
+        fr.setConsumeIndex(offset + num);
 
     }
 }
