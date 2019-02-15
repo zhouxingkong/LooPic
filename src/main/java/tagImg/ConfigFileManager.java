@@ -45,7 +45,7 @@ public class ConfigFileManager {
     public String makeKey(String[] tags) {
         String out = tags[0];
         for (int i = 1; i < tags.length; i++) {
-            out = out + "-" + tags[i];
+            out = out + DIV + tags[i];
         }
         return out;
     }
@@ -63,23 +63,31 @@ public class ConfigFileManager {
 
         List<TagedFile> filteredList = null;
         int[] indexs;
-        FilterResult fr;
-        int storagedNum = resultStorage.searchResultNum(key);   //搜索缓存
-        if (storagedNum >= picNum) {
-            fr = resultStorage.get(key);
-        } else {
-            /**/
-            filteredList = picFilter.filter(totalList, tags, picNum);    //过滤
-//            while (filteredList == null || filteredList.size() < picNum) {
-//                tags = Arrays.copyOf(tags, tags.length - 1);
-//                filteredList = picFilter.filter(totalList, tags, picNum);    //过滤
-//            }
-            /**/
-            int fileNum = filteredList.size();
-            indexs = genRandomList(fileNum);
-            fr = new FilterResult(filteredList, indexs);
-            resultStorage.put(key, fr);  //缓存结果
+        FilterResult fr = null;
+        int storagedNum = 0;
+        while (filteredList == null || filteredList.size() < picNum) {
+            storagedNum = resultStorage.searchResultNum(key);   //搜索缓存
+            if (storagedNum >= picNum) {
+                fr = resultStorage.get(key);
+                break;
+            } else {
+                /**/
+                filteredList = picFilter.filter(totalList, tags, picNum);    //过滤
+                /**/
+                int fileNum = filteredList.size();
+                if (fileNum < picNum && tags.length > 1) {
+                    key = key.substring(0, key.lastIndexOf(DIV));
+                    tags = key.split(DIV);
+                } else {
+                    indexs = genRandomList(fileNum);
+                    fr = new FilterResult(filteredList, indexs);
+                    resultStorage.put(key, fr);  //缓存结果
+                    break;
+                }
+
+            }
         }
+
         /*拷贝文件*/
         imageCpy.copyRandImage(fr, targetDir, picNum);
         System.out.println("tag=" + key + "resultNum = " + fr.getFilteredList().size());
