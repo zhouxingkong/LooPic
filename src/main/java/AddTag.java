@@ -1,4 +1,4 @@
-import multiDir.TagManager;
+import tagImg.TagManager;
 
 import java.util.Scanner;
 

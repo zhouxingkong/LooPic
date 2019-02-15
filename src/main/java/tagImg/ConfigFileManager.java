@@ -24,6 +24,9 @@ public class ConfigFileManager {
     }
 
     public int[] genRandomList(int file_num) {
+        if (file_num < 2) {
+            return new int[]{0};
+        }
         int[] indexs = new int[file_num];
         for (int j = 0; j < file_num; j++) {
             indexs[j] = j;    //给索引数组赋值
@@ -37,6 +40,14 @@ public class ConfigFileManager {
         }
 
         return indexs;
+    }
+
+    public String makeKey(String[] tags) {
+        String out = tags[0];
+        for (int i = 1; i < tags.length; i++) {
+            out = out + "-" + tags[i];
+        }
+        return out;
     }
 
     /*解析一行配置文件*/
@@ -69,9 +80,9 @@ public class ConfigFileManager {
             fr = new FilterResult(filteredList, indexs);
             resultStorage.put(key, fr);  //缓存结果
         }
-
+        /*拷贝文件*/
         imageCpy.copyRandImage(fr, targetDir, picNum);
-        System.out.println("tag=" + tags[0] + "resultNum = " + fr.getFilteredList().size());
+        System.out.println("tag=" + key + "resultNum = " + fr.getFilteredList().size());
     }
 
     public void parseConfigFile(String dir) {

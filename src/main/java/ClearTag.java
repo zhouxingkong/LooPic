@@ -2,7 +2,7 @@ import tagImg.TagManager;
 
 import java.util.Scanner;
 
-public class RemoveTag {
+public class ClearTag {
     public static void main(String[] args) {
 //        String[] nameSplitDot = "asjgno.ddd".split(".");
 //        System.out.println(nameSplitDot.length+":"+ nameSplitDot[0]);
@@ -12,9 +12,7 @@ public class RemoveTag {
         while (true) {
             System.out.println("---------------------------------");
             String dir = in.next();
-            String tag = in.next();
-            tm.removeTag(dir, tag);
-
+            tm.clearTag(dir);
         }
     }
 }
