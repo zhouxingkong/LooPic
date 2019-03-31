@@ -4,13 +4,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ImageCpy {
     //    public int file_num = 0;
 //    int[] indexs;
     int currIndex = 0;
     String letters = getNameRoot(8);
+
+    Map<String, String> duplicate = new HashMap<String, String>();
 
     //后缀
     public static String getSuffix(String filename) {
@@ -82,6 +86,14 @@ public class ImageCpy {
             f = filelist.get(indexs[i + offset]);
             fromPath = f.getAbsolutePath();
 
+            String fileName = f.getName();
+            /*防止图片重复*/
+            if (num + 5 < numLimit && duplicate.containsKey(fileName)) {
+                offset++;
+                i--;
+                continue;
+            }
+
             numbers = "" + currIndex;
             currIndex++;
             while (numbers.length() < 6) {
@@ -91,6 +103,8 @@ public class ImageCpy {
 
             toPath = toDir + "/" + letters + numbers + "." + suf;
             copyFile(fromPath, toPath);
+
+            duplicate.put(fileName, "have");
         }
         fr.setConsumeIndex(offset + num);
 

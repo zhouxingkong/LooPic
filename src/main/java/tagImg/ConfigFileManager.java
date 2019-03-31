@@ -86,6 +86,9 @@ public class ConfigFileManager {
                 }
 
             }
+
+            //todo ：shuffle
+
         }
 
         /*拷贝文件*/
