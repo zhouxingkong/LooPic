@@ -88,7 +88,7 @@ public class ImageCpy {
 
             String fileName = f.getName();
             /*防止图片重复*/
-            if (num + 5 < numLimit && duplicate.containsKey(fileName)) {
+            if (i + offset + 1 < indexs.length && duplicate.containsKey(fileName)) {
                 offset++;
                 i--;
                 continue;
