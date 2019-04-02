@@ -32,23 +32,13 @@ public class PicNameFilter {
         List<String> inputTag = new ArrayList<String>(Arrays.asList(tags));
         while (result == null) {
             result = inputList.stream()
-                    .filter((TagedFile f) -> {
-//                        String name = f.getName();
-                        for (String t : inputTag) {
-                            if (!f.tags.contains(t)) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    })
-                    .peek(tagedFile -> {
-                        /*计算匹配分*/
-                        computeMp(tagedFile, inputTag);
-                    })
+                    .filter((TagedFile f) -> judgeCandidate(f, inputTag))    //step1: 找出所有全部包含目标标签组的文件集合
+                    .peek(tagedFile -> computeMp(tagedFile, inputTag)) //step2:使用标签匹配算法来排序文件的优先级
+                    .sorted(Comparator.comparing(o -> o.mp))    //step3:将结果按照匹配分排序
                     .collect(Collectors.toList());
-            result.sort(Comparator.comparing(o -> o.mp));
+            //result.sort(Comparator.comparing(o -> o.mp));
             /*打印结果*/
-            //printResult(result,inputTag);
+            printResult(result, inputTag);
         }
 
         return result;
@@ -68,6 +58,15 @@ public class PicNameFilter {
             }
             System.out.println(" ;mp=" + t.mp);
         }
+    }
+
+    public boolean judgeCandidate(TagedFile f, List<String> inputTag) {
+        for (String t : inputTag) {
+            if (!f.tags.contains(t)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
