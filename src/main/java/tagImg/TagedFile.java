@@ -6,9 +6,9 @@ import java.util.List;
 
 public class TagedFile {
     public static final String DIV = "-";
-    float mp = 1000.0f;     //匹配分，越小说明和目标标签越近
-    File file;
-    List<String> tags;
+    public float mp = 1000.0f;     //匹配分，越小说明和目标标签越近
+    public File file;
+    public List<String> tags;
 
     public TagedFile(File f) {
         file = f;

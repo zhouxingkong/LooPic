@@ -1,11 +1,21 @@
 package tagImg;
 
+import tagImg.match.MatchBase;
+import tagImg.match.MatchFloorProperSubnorm;
+
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class PicNameFilter {
-    public static final float LAMDA = 4.0f;
+
+    /**
+     * 引入策略模式，将不同标签匹配策略封装到子类中
+     */
+    MatchBase matchBase = new MatchFloorProperSubnorm();
 
     public static List<TagedFile> getFileList(List<TagedFile> filelist, String strPath) {
 
@@ -33,7 +43,7 @@ public class PicNameFilter {
         while (result == null) {
             result = inputList.stream()
                     .filter((TagedFile f) -> judgeCandidate(f, inputTag))    //step1: 找出所有全部包含目标标签组的文件集合
-                    .peek(tagedFile -> computeMp(tagedFile, inputTag)) //step2:使用标签匹配算法来排序文件的优先级
+                    .peek(tagedFile -> matchBase.computeMp(tagedFile, inputTag)) //step2:使用标签匹配算法来排序文件的优先级
                     .sorted(Comparator.comparing(o -> o.mp))    //step3:将结果按照匹配分排序
                     .collect(Collectors.toList());
             //result.sort(Comparator.comparing(o -> o.mp));
@@ -67,25 +77,6 @@ public class PicNameFilter {
             }
         }
         return true;
-    }
-
-    /**
-     * 计算匹配分的函数；使用先验标签匹配法
-     *
-     * @param tagedFile
-     * @param inputTag
-     */
-    public void computeMp(TagedFile tagedFile, List<String> inputTag) {
-        tagedFile.mp = 0;
-        /*加入随机事件，避免结果过于单调*/
-        float rand = -LAMDA + new Random().nextFloat() * 2 * LAMDA;
-        for (String t : tagedFile.tags) {
-            tagedFile.mp *= 2;
-            if (!inputTag.contains(t)) {
-                tagedFile.mp += 1.0;
-            }
-        }
-        tagedFile.mp += rand;   //使用随机数来shuffle
     }
 
 }
