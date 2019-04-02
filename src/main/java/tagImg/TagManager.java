@@ -156,12 +156,24 @@ public class TagManager {
         doClearTag(dir + "/");
     }
 
+    /**
+     * 自动添加一些标签
+     *
+     * @param tags
+     */
+    public void autoAddTag(List<String> tags) {
+        if (!tags.contains("黑夜")) {
+            tags.add("白天");
+        }
+    }
+
     public void doAddTagByDir(List<String> tags, String strPath) {
 
         File dir = new File(strPath);
         String fileName = dir.getName();
         String dirStr = dir.getAbsolutePath();
         tags.add(fileName);
+        //autoAddTag(tags);
         clearTag(dirStr);
         for (String t : tags) {
             if (!ROOT_TAG.equals(t)) addTag(dirStr, t);
