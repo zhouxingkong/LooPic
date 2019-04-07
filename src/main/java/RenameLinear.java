@@ -22,7 +22,7 @@ public class RenameLinear {
 //            int offset = in.nextInt();
             int offset = 0;
             System.out.println("Begin!");
-            r.getFileList(m);
+            r.getFileListByDir(m);
             r.renameLinear(pre, offset);
             System.out.println("Success!!");
         }

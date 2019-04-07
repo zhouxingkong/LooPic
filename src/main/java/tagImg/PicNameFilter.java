@@ -48,7 +48,7 @@ public class PicNameFilter {
                     .collect(Collectors.toList());
             //result.sort(Comparator.comparing(o -> o.mp));
             /*打印结果*/
-            printResult(result, inputTag);
+//            printResult(result, inputTag);
         }
 
         return result;

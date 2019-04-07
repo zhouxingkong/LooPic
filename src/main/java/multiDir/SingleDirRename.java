@@ -1,14 +1,17 @@
 package multiDir;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class SingleDirRename {
     public int img_index = 0;
     public int file_num = 0;
     String dir;
-    String[] files;
+    File[] files;
     List imglist;
 
     int[] indexs;
@@ -22,12 +25,46 @@ public class SingleDirRename {
         return str;
     }
 
+    public static List<File> getFileList(List<File> filelist, String strPath) {
+
+        File dir = new File(strPath);
+        File[] files = dir.listFiles(); // 该文件目录下文件全部放入数组
+        if (files != null) {
+            for (int i = 0; i < files.length; i++) {
+//                String fileName = files[i].getName();
+                if (files[i].isDirectory()) { // 判断是文件还是文件夹
+                    getFileList(filelist, files[i].getAbsolutePath()); // 获取文件绝对路径
+                } else {
+//                    String strFileName = files[i].getAbsolutePath();
+//                    System.out.println("---" + strFileName);
+                    filelist.add(files[i]);
+                }
+            }
+
+        }
+        return filelist;
+    }
+
     public void getFileList(String base) {
-        dir = base/*+lists[file_index]+"/"*/ + "/";
+        dir = base/*+lists[file_index]+"/"*/ + File.separator;
         File file = new File(dir);
-        files = file.list();
+        files = file.listFiles();
         file_num = files.length;
-        imglist = java.util.Arrays.asList(files);
+        ArrayList<File> fileList = new ArrayList<File>(Arrays.asList(files));
+        imglist = fileList.stream().map((f) -> f.getAbsolutePath().replace("\\", "/")).collect(Collectors.toList());
+
+//        imglist = java.util.Arrays.asList(files);
+    }
+
+    public void getFileListByDir(String base) {
+        dir = base/*+lists[file_index]+"/"*/ + File.separator;
+        List<File> fileList = getFileList(new ArrayList<File>(), dir);
+
+
+//        File file = new File(dir);
+//        files = file.listFiles();
+        file_num = fileList.size();
+        imglist = fileList.stream().map((f) -> f.getAbsolutePath().replace("\\", "/")).collect(Collectors.toList());
     }
 
     public void genLinearList() {
@@ -51,7 +88,7 @@ public class SingleDirRename {
     public void doRename(String pre, int offset) {
         for (int i = 0; i < file_num; i++) {
 
-            String path = dir + imglist.get(img_index);
+            String path = /*dir + */"" + imglist.get(img_index);
 
             String[] split_by_dir = path.split("/");
             String last_part = "";
@@ -68,7 +105,7 @@ public class SingleDirRename {
             }
             String outputDir = "";
             for (int j = 0; j < split_by_dir.length - 1; j++) {
-                outputDir += split_by_dir[j];
+                outputDir += split_by_dir[j] + "/";
             }
             outputDir += "/";
             outputDir += pre;
@@ -81,6 +118,8 @@ public class SingleDirRename {
             boolean ret = file.renameTo(new File(outputDir));
             if (!ret) {
                 System.out.println("Error!!" + path + "   ->    " + outputDir);
+            } else {
+                System.out.println("success!!" + path + "   ->    " + outputDir);
             }
 
             img_index++;
