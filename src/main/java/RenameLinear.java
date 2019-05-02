@@ -17,7 +17,7 @@ public class RenameLinear {
             System.out.println("------------------------------------");
             in.useDelimiter("\n");
             String m = in.next();
-            String pre = r.getNameRoot(8);
+            String pre = r.getNameRoot(6);
 //            String pre = "fengjing";
 //            int offset = in.nextInt();
             int offset = 0;

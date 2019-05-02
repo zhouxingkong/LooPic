@@ -37,7 +37,7 @@ public class PicNameFilter {
         return filelist;
     }
 
-    List<TagedFile> filter(List<TagedFile> inputList, String[] tags, int num) {
+    public List<TagedFile> filter(List<TagedFile> inputList, String[] tags, int num) {
         List<TagedFile> result = null;
         List<String> inputTag = new ArrayList<String>(Arrays.asList(tags));
         while (result == null) {
@@ -72,9 +72,28 @@ public class PicNameFilter {
 
     public boolean judgeCandidate(TagedFile f, List<String> inputTag) {
         for (String t : inputTag) {
-            if (!f.tags.contains(t)) {
+
+            /**/
+            String[] subTags = t.split("\\|");
+            boolean output = false; //当前这条tag是否满足
+            for (String sub : subTags) {
+                boolean stat = true;
+
+                if (sub.startsWith("!")) {
+                    stat = false;
+                    sub = sub.substring(1);
+                }
+                if (stat ^ (!f.tags.contains(sub))) {
+                    output = true;
+                    break;
+                }
+
+            }
+
+            if (!output) {
                 return false;
             }
+
         }
         return true;
     }

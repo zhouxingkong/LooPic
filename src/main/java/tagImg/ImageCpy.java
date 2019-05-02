@@ -74,7 +74,7 @@ public class ImageCpy {
      */
     public void copyRandImage(FilterResult fr, String toDir, int num) {
         List<TagedFile> filelist = fr.getFilteredList();
-        int[] indexs = fr.getRandomIndexs();
+//        int[] indexs = fr.getRandomIndexs();
         int numLimit = fr.getRes();
         int offset = fr.getConsumeIndex();
 
