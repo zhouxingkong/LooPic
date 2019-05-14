@@ -15,6 +15,14 @@ public class TestSomething {
     }
 
     @Test
+    public void testRadix() {
+//        key = key.substring(0,key.lastIndexOf("-"));
+        String key = "正则-表达式-好用";
+//        System.out.println(key.matches(".*表达|^((?!正则).)*$"));
+        System.out.println(key.matches("((?!表达式).)*"));
+    }
+
+    @Test
     public void testRanking() {
         List<TagedFile> totalList = new ArrayList<TagedFile>();
         totalList.add(new TagedFile(new File("F:/601/unicloud/data/xxxxxxxx/pic01-good.jpg")));

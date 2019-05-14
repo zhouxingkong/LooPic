@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class MatchFloorProperSubnorm extends MatchBase {
 
-    public static final float PROPOR_STEP = 5.0f;
+    public static final float PROPOR_STEP = 3.0f;
 
     /**
      * 计算匹配分的函数；使用先验标签匹配法

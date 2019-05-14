@@ -14,8 +14,10 @@ public class ConfigFileManager {
     public ImageCpy imageCpy;
     public FilterResultStorage resultStorage;
     public String targetDir;
+    public String exceptDir;
 
     List<TagedFile> totalList;
+    List<String> excludeTags;
 
     public ConfigFileManager() {
         picFilter = new PicNameFilter();
@@ -50,6 +52,26 @@ public class ConfigFileManager {
         return out;
     }
 
+    /**
+     * 读取排除标签的配置文件
+     *
+     * @param dir
+     * @throws IOException
+     */
+    public void loadExceptTags(String dir) throws IOException {
+        excludeTags = new ArrayList<String>();
+        FileReader fr = new FileReader(dir);
+        BufferedReader bf = new BufferedReader(fr);
+        String str;
+        /*读取源文件路径*/
+        while ((str = bf.readLine()) != null) {
+            excludeTags.add(str);
+        }
+
+//        System.out.println("排除配置个数"+exceptTags.size()+"第一个"+exceptTags.get(0));
+
+    }
+
     /*解析一行配置文件*/
     public void parseOneLine(String line) {
         String[] nameSplitSpace = line.split("\\ ");
@@ -72,7 +94,7 @@ public class ConfigFileManager {
                 break;
             } else {
                 /**/
-                filteredList = picFilter.filter(totalList, tags, picNum);    //过滤
+                filteredList = picFilter.filter(totalList, tags, excludeTags, picNum);    //过滤
                 /**/
                 int fileNum = filteredList.size();
                 if (fileNum < picNum && tags.length > 1) {
@@ -111,6 +133,12 @@ public class ConfigFileManager {
             /*目标文件路径*/
             if ((str = bf.readLine()) != null) {
                 targetDir = str;
+            }
+
+            /*读取排除文件路径*/
+            if ((str = bf.readLine()) != null) {
+                exceptDir = str;
+                loadExceptTags(exceptDir);
             }
 
             // 按行读取字符串
