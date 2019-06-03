@@ -72,7 +72,7 @@ public class ImageCpy {
      * @param toDir
      * @param num
      */
-    public void copyRandImage(FilterResult fr, String toDir, int num) {
+    public String copyRandImage(FilterResult fr, String toDir, int num) {
         List<TagedFile> filelist = fr.getFilteredList();
 //        int[] indexs = fr.getRandomIndexs();
         int numLimit = fr.getRes();
@@ -85,6 +85,7 @@ public class ImageCpy {
 
         String numbers = "";
         String suf = "";
+        String toFileName = "";
         for (int i = 0; i < num; i++) {
 //            f = filelist.get(indexs[i + offset]);
             f = filelist.get(i + offset);   //由于已经进行了随机数shuffle操作，所以不需要用随机数索引
@@ -104,13 +105,14 @@ public class ImageCpy {
                 numbers = "0" + numbers;
             }
             suf = getSuffix(f.getName());
-
-            toPath = toDir + "/" + letters + numbers + "." + suf;
+            toFileName = letters + numbers + "." + suf;
+            toPath = toDir + "/" + toFileName;
             copyFile(fromPath, toPath);
 
             duplicate.put(fileName, "have");
         }
         fr.setConsumeIndex(offset + num);
 
+        return toFileName;
     }
 }

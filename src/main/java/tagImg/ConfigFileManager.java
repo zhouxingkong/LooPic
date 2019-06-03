@@ -1,8 +1,6 @@
 package tagImg;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,9 +13,12 @@ public class ConfigFileManager {
     public FilterResultStorage resultStorage;
     public String targetDir;
     public String exceptDir;
+    BufferedWriter outputFileWriter;
+
 
     List<TagedFile> totalList;
     List<String> excludeTags;
+
 
     public ConfigFileManager() {
         picFilter = new PicNameFilter();
@@ -25,6 +26,36 @@ public class ConfigFileManager {
         resultStorage = new FilterResultStorage();
     }
 
+    public void initOutputFile(String path) {
+        try {
+            File writeName = new File(path); // 相对路径，如果没有则要建立一个新的output.txt文件
+            writeName.createNewFile(); // 创建新文件,有同名的文件的话直接覆盖
+
+            FileWriter writer = new FileWriter(writeName);
+            outputFileWriter = new BufferedWriter(writer);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void writeOutputLine(OutputDesc outputDesc) {
+
+        try {
+            outputFileWriter.write(outputDesc + "\r\n"); // \r\n即为换行
+            outputFileWriter.flush(); // 把缓存区内容压入文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 生成随机列表
+     *
+     * @param file_num
+     * @return
+     */
     public int[] genRandomList(int file_num) {
         if (file_num < 2) {
             return new int[]{0};
@@ -74,14 +105,50 @@ public class ConfigFileManager {
 
     /*解析一行配置文件*/
     public void parseOneLine(String line) {
-        String[] nameSplitSpace = line.split("\\ ");
+        String[] nameSplitSpace = line.split("\\ ");    //空格分开不同的部分
         if (nameSplitSpace.length < 2) return;
-        int picNum = Integer.parseInt(nameSplitSpace[1]);   //总共图片数量
+        int picNum = 1;   //总共图片数量
 
+        OutputDesc outputDesc = new OutputDesc();
 
-        String key = nameSplitSpace[0];     //storage的键
+        /*配图*/
+        String picKey = nameSplitSpace[0];     //storage的键
+        String picName = "#";
+        if (!picKey.equals("#")) {
+            picName = processPicture(picKey, picNum);
+        }
+        if (picName == null || picName.length() < 1) {
+            picName = "#";
+        }
+        outputDesc.setPicFileName(picName);
+
+        /*配音频*/
+        if (nameSplitSpace.length > 2) {
+            String soundTag = nameSplitSpace[1];
+            String soundMode = nameSplitSpace[2];
+            outputDesc.setSoundTag(soundTag);
+            outputDesc.setSoundMode(soundMode);
+        }
+
+        /*配文字*/
+        if (nameSplitSpace.length > 3) {
+            String text = nameSplitSpace[3];
+            outputDesc.setText(text);
+        }
+
+        /*输出文件*/
+        writeOutputLine(outputDesc);
+    }
+
+    /**
+     * 处理一张图片的输出
+     *
+     * @param key
+     * @param picNum
+     */
+    public String processPicture(String key, int picNum){
         String[] tags = key.split(DIV);
-        if (tags.length < 1) return;
+        if (tags.length < 1) return "#";
 
         List<TagedFile> filteredList = null;
         int[] indexs;
@@ -114,8 +181,9 @@ public class ConfigFileManager {
         }
 
         /*拷贝文件*/
-        imageCpy.copyRandImage(fr, targetDir, picNum);
+        String dstName = imageCpy.copyRandImage(fr, targetDir + "/imgs", picNum);
         System.out.println("tag=" + key + "resultNum = " + fr.getFilteredList().size());
+        return dstName;
     }
 
     public void parseConfigFile(String dir) {
@@ -125,21 +193,27 @@ public class ConfigFileManager {
             FileReader fr = new FileReader(name);
             BufferedReader bf = new BufferedReader(fr);
             String str;
-            /*读取源文件路径*/
+            /*第一行:读取源文件路径*/
             if ((str = bf.readLine()) != null) {
                 List<TagedFile> fileList = new ArrayList<TagedFile>();
                 totalList = PicNameFilter.getFileList(fileList, str);  //获取总共的文件列表
             }
-            /*目标文件路径*/
+            /*第二行:目标文件路径*/
             if ((str = bf.readLine()) != null) {
                 targetDir = str;
+                File picDir = new File(targetDir + "/imgs");
+                if (!picDir.exists()) {
+                    picDir.mkdirs();
+                }
             }
 
-            /*读取排除文件路径*/
+            /*第三行:读取排除文件路径*/
             if ((str = bf.readLine()) != null) {
                 exceptDir = str;
                 loadExceptTags(exceptDir);
             }
+
+            initOutputFile(targetDir +"/index.txt");
 
             // 按行读取字符串
             while ((str = bf.readLine()) != null) {
