@@ -99,13 +99,13 @@ public class ConfigFileManager {
             excludeTags.add(str);
         }
 
-//        System.out.println("排除配置个数"+exceptTags.size()+"第一个"+exceptTags.get(0));
+        System.out.println("排除配置个数:" + excludeTags.size());
 
     }
 
     /*解析一行配置文件*/
     public void parseOneLine(String line) {
-        String[] nameSplitSpace = line.split("\\ ");    //空格分开不同的部分
+        String[] nameSplitSpace = line.split(",");    //空格分开不同的部分
         if (nameSplitSpace.length < 2) return;
         int picNum = 1;   //总共图片数量
 
@@ -187,7 +187,7 @@ public class ConfigFileManager {
     }
 
     public void parseConfigFile(String dir) {
-        String name = dir + "/" + "config.txt";
+        String name = dir + "/" + "loo.csv";
 //        ArrayList<String> arrayList = new ArrayList<>();
         try {
             FileReader fr = new FileReader(name);
@@ -195,12 +195,16 @@ public class ConfigFileManager {
             String str;
             /*第一行:读取源文件路径*/
             if ((str = bf.readLine()) != null) {
+                str = str.replaceAll(",", "");
+                System.out.println("源文件:" + str);
                 List<TagedFile> fileList = new ArrayList<TagedFile>();
-                totalList = PicNameFilter.getFileList(fileList, str);  //获取总共的文件列表
+                totalList = PicNameFilter.getFileList(fileList, "D:/mass/tag_dir");  //获取总共的文件列表
+                System.out.println("源文件个数:" + totalList.size());
             }
             /*第二行:目标文件路径*/
             if ((str = bf.readLine()) != null) {
-                targetDir = str;
+                targetDir = str.replaceAll(",", "");
+                System.out.println("目标文件:" + targetDir);
                 File picDir = new File(targetDir + "/imgs");
                 if (!picDir.exists()) {
                     picDir.mkdirs();
@@ -209,7 +213,7 @@ public class ConfigFileManager {
 
             /*第三行:读取排除文件路径*/
             if ((str = bf.readLine()) != null) {
-                exceptDir = str;
+                exceptDir = str.replaceAll(",", "");
                 loadExceptTags(exceptDir);
             }
 
@@ -217,6 +221,10 @@ public class ConfigFileManager {
 
             // 按行读取字符串
             while ((str = bf.readLine()) != null) {
+                if (str.endsWith(",")) {
+                    str = str.substring(0, str.length() - 1);
+                }
+                System.out.println(str);
                 parseOneLine(str);
             }
             bf.close();
